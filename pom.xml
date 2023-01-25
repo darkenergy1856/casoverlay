@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd ">
+  <!-- This module was also published with a richer model, Gradle metadata,  -->
+  <!-- which should be used instead. Do not delete the following line which  -->
+  <!-- is to indicate to Gradle or any Gradle module metadata file consumer  -->
+  <!-- that they should prefer consuming it instead. -->
+  <!-- do_not_remove: published-with-gradle-metadata -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apereo.cas</groupId>
+  <artifactId>cas-overlay</artifactId>
+  <version>6.6.2</version>
+  <packaging>war</packaging>
+
+
+  <properties>
+    <!-- app.server could be -jetty, -undertow, -tomcat, or blank if you plan to provide appserver -->
+    <app.server>-tomcat</app.server>
+
+    <mainClassName>org.springframework.boot.loader.WarLauncher</mainClassName>
+    <isExecutable>false</isExecutable>
+    <manifestFileToUse>${project.build.directory}/war/work/org.apereo.cas/cas-server-webapp${app.server}/META-INF/MANIFEST.MF</manifestFileToUse>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apereo.cas</groupId>
+        <artifactId>cas-server-support-bom</artifactId>
+        <version>6.6.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>2.7.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>5.3.22</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>5.3.22</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.22</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context-support</artifactId>
+        <version>5.3.22</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-expression</artifactId>
+        <version>5.3.22</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.apereo.cas</groupId>
+      <artifactId>cas-server-core-api-configuration-model</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apereo.cas</groupId>
+      <artifactId>cas-server-webapp-init</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apereo.cas</groupId>
+      <artifactId>cas-server-support-oidc</artifactId>
+      <version>6.6.2</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apereo.cas</groupId>
+      <artifactId>cas-server-support-json-service-registry</artifactId>
+      <version>6.6.2</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apereo.cas</groupId>
+      <artifactId>cas-server-support-oauth-webflow</artifactId>
+      <version>6.6.2</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+
+<build>
+  <plugins>
+      <plugin>
+          <groupId>com.rimerosolutions.maven.plugins</groupId>
+          <artifactId>wrapper-maven-plugin</artifactId>
+          <version>0.0.5</version>
+          <configuration>
+              <verifyDownload>true</verifyDownload>
+              <checksumAlgorithm>MD5</checksumAlgorithm>
+          </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>2.7.3</version>
+          <configuration>
+              <mainClass>${mainClassName}</mainClass>
+              <addResources>true</addResources>
+              <executable>${isExecutable}</executable>
+              <layout>WAR</layout>
+          </configuration>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>repackage</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.2</version>
+          <configuration>
+              <warName>cas</warName>
+              <failOnMissingWebXml>false</failOnMissingWebXml>
+              <recompressZippedFiles>false</recompressZippedFiles>
+              <archive>
+                  <compress>false</compress>
+                  <manifestFile>${manifestFileToUse}</manifestFile>
+              </archive>
+              <overlays>
+                  <overlay>
+                      <groupId>org.apereo.cas</groupId>
+                      <artifactId>cas-server-webapp${app.server}</artifactId>
+                  </overlay>
+              </overlays>
+          </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+          <configuration>
+            <release>11</release>
+            <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          </configuration>
+      </plugin>
+  </plugins>
+  <finalName>cas</finalName>
+</build>
+
+<profiles>
+  <profile>
+      <activation>
+          <activeByDefault>true</activeByDefault>
+      </activation>
+      <id>default</id>
+      <dependencies>
+          <dependency>
+              <groupId>org.apereo.cas</groupId>
+              <artifactId>cas-server-webapp${app.server}</artifactId>
+              <version>6.6.2</version>
+              <type>war</type>
+              <scope>runtime</scope>
+          </dependency>
+          <!--
+          ...Additional dependencies may be placed here...
+          -->
+      </dependencies>
+  </profile>
+</profiles>
+</project>
